@@ -1,0 +1,4 @@
+
+<template name="img-compress">
+  <canvas style="width: {{canWidth}}px;height: {{canHeight}}px;position: fixed; z-index: -1; left: -999px; top: 000rpx;" canvas-id="compressCanvasId"/>
+</template>
