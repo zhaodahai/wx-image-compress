@@ -14,8 +14,8 @@ export default class ImgCompress {
   }
 
   // 压缩
-  compress(src , cb) {
-    return this.page.drawCanvas(src);
+  compress(src, aspectRatio = 0.5, quality = 0.5) {
+    return this.page.drawCanvas(src, aspectRatio, quality);
   }
 
   // 获取图片文件信息
@@ -38,7 +38,7 @@ export default class ImgCompress {
   }
 
   // 绘制图片
-  drawCanvas(src, aspectRatio = 0.5, quality = 0.5){
+  drawCanvas(src, aspectRatio, quality){
     const ctx = wx.createCanvasContext('compressCanvasId');
     let that = this.page;
     let imgInfo = {
