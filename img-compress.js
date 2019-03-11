@@ -37,7 +37,7 @@ export default class ImgCompress {
     })
   }
 
-  // 绘制图片
+ // 绘制图片
   drawCanvas(src, aspectRatio, quality){
     const ctx = wx.createCanvasContext('compressCanvasId');
     let that = this.page;
@@ -46,43 +46,48 @@ export default class ImgCompress {
       origin: {}, // 图片原始信息
       compress: {}, // 图片压缩后的信息
     };
-    return this.getImageFileInfo(src)
+    return _.getImageFileInfo(src)
     .then(res => {
       imgInfo.origin = res;
-      if (res.width > 300 || res.height > 300) { //判断图片是否超过300px
-        return new Promise((resolve , reject) => {
-          let cW = res.width * aspectRatio;
-          let cH = res.height * aspectRatio;
-          //画出压缩图片
-          ctx.drawImage(src, 0, 0, cW, cH);
-          ctx.draw(false, __ => {
-            wx.canvasToTempFilePath({
-              x: 0,
-              y: 0,
-              width: cW,
-              height: cH,
-              destWidth: cW,
-              destHeight: cH,
-              fileType: 'jpg',
-              quality, 
-              canvasId: 'compressCanvasId',
-              fail: e => {
-                imgInfo.result = 0;
-                reject(imgInfo);
-              },
-              success: function success(res) {
-                imgInfo.result = 2;
-                resolve(res.tempFilePath);
-              },
-            });
-          });
-        })
-      } else {
-        imgInfo.result = 1;
-        return _.resolve(src);
+      let cW = res.width * aspectRatio;
+      let cH = res.height * aspectRatio;
+      let ratio = cW / cH;
+      // 当宽高大于画布宽高时，设置为画布宽高
+      if (cW > that.data.canWidth) {
+        cW = that.data.canWidth;
+        cH = cW / ratio;
       }
+      if (cH > that.data.canHeight) {
+        cH = that.data.canHeight;
+        cW = cH * ratio;
+      }
+      return new Promise((resolve , reject) => {
+        //画出压缩图片
+        ctx.drawImage(src, 0, 0, cW, cH);
+        ctx.draw(false, __ => {
+          wx.canvasToTempFilePath({
+            x: 0,
+            y: 0,
+            width: cW,
+            height: cH,
+            destWidth: cW,
+            destHeight: cH,
+            fileType: 'jpg',
+            quality, 
+            canvasId: 'compressCanvasId',
+            fail: e => {
+              imgInfo.result = 0;
+              reject(imgInfo);
+            },
+            success: function success(res) {
+              imgInfo.result = 2;
+              resolve(res.tempFilePath);
+            },
+          });
+        });
+      })
     }).then(res => {
-      return this.getImageFileInfo(res);
+      return _.getImageFileInfo(res);
     }).then(res => {
       imgInfo.compress = res;
       return _.resolve(imgInfo);
@@ -90,6 +95,7 @@ export default class ImgCompress {
   }
 
 }
+
 
 const _ = {
   /**

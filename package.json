@@ -1,6 +1,6 @@
 {
   "name": "wx-image-compress",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "微信图片压缩",
   "main": "img-compress.js",
   "scripts": {
